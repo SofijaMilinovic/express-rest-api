@@ -245,12 +245,6 @@ app.post('/updatePersonalData', async (req, res) => {
 
   const allowedFields = ['firstName', 'lastName', 'username', 'email', 'password'];
 
-  // const updates = allowedFields
-  //   .filter(field => req.body[field] !== undefined)
-  //   .map(field => `${field} = ?`);
-  // const params = allowedFields
-  //   .filter(field => req.body[field] !== undefined)
-  //   .map(field => req.body[field]);
   const updates = [];
   const params = [];
   for (const field of allowedFields) {
