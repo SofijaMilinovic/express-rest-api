@@ -1,0 +1,391 @@
+openapi: 3.0.3
+info:
+  title: User-Tasks API
+  description: API za upravljanje korisnicima i zadacima
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+
+paths:
+  /login:
+    post:
+      summary: Login korisnika
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                  example: sofija
+                password:
+                  type: string
+                  example: sofija123
+      responses:
+        '200':
+          description: Uspešan login
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  username:
+                    type: string
+                  firstName:
+                    type: string
+                  lastName:
+                    type: string
+                  role:
+                    type: string
+        '400':
+          description: Username i password su obavezni
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '401':
+          description: Neuspešan login
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          description: Greška servera
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /createTask:
+    post:
+      summary: Kreiranje zadatka (basic user)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - taskBody
+              properties:
+                taskBody:
+                  type: string
+                  example: Task body example
+      responses:
+        '200':
+          description: Kreiran zadatak
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  body:
+                    type: string
+                  userId:
+                    type: integer
+        '401':
+          description: Niste ulogovani
+        '403':
+          description: Nemate permisije
+        '500':
+          description: Greška servera
+
+  /updateTask/{taskId}:
+    post:
+      summary: Update zadatka po ID
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - taskBody
+              properties:
+                taskBody:
+                  type: string
+                  example: Novi task body
+      responses:
+        '200':
+          description: Zadak uspešno ažuriran
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  body:
+                    type: string
+                  userId:
+                    type: integer
+        '401':
+          description: Niste ulogovani
+        '403':
+          description: Nemate dozvolu da menjate ovaj task
+        '404':
+          description: Task ne postoji
+        '500':
+          description: Greška servera
+
+  /getAllTasks:
+    get:
+      summary: Dohvati sve zadatke
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 10
+        - name: sort
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: asc
+      responses:
+        '200':
+          description: Lista zadataka
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  page:
+                    type: integer
+                  limit:
+                    type: integer
+                  tasks:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        body:
+                          type: string
+                        userId:
+                          type: integer
+                        createdDate:
+                          type: string
+                          format: date-time
+        '401':
+          description: Niste ulogovani
+        '500':
+          description: Greška servera
+
+  /getTaskById/{taskId}:
+    get:
+      summary: Dohvati zadatak po ID
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Zadak po ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  body:
+                    type: string
+                  userId:
+                    type: integer
+        '401':
+          description: Niste ulogovani
+        '403':
+          description: Nemate pristup ovom tasku
+        '404':
+          description: Task ne postoji
+        '500':
+          description: Greška servera
+
+  /getTasksByUsername/{username}:
+    get:
+      summary: Dohvati zadatke korisnika po username (admin)
+      parameters:
+        - name: username
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 10
+        - name: sort
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: asc
+      responses:
+        '200':
+          description: Lista zadataka korisnika
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  page:
+                    type: integer
+                  limit:
+                    type: integer
+                  tasks:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        body:
+                          type: string
+                        userId:
+                          type: integer
+                        createdDate:
+                          type: string
+                          format: date-time
+        '401':
+          description: Niste ulogovani
+        '403':
+          description: Nemate dozvolu za ovu operaciju
+        '404':
+          description: Korisnik nije pronađen
+        '500':
+          description: Greška servera
+
+  /updatePersonalData:
+    post:
+      summary: Ažuriranje ličnih podataka (basic user)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                username:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Podaci uspešno ažurirani
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '400':
+          description: Nije poslato ništa za update ili duplikat
+        '401':
+          description: Niste ulogovani
+        '404':
+          description: Korisnik nije pronađen
+        '500':
+          description: Greška servera
+
+  /updatePersonalDataByUsername/{username}:
+    post:
+      summary: Ažuriranje ličnih podataka korisnika (admin)
+      parameters:
+        - name: username
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                username:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                role:
+                  type: string
+                  enum: [basic, admin]
+      responses:
+        '200':
+          description: Podaci korisnika uspešno ažurirani
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '400':
+          description: Nije poslato ništa ili role nije validna
+        '401':
+          description: Niste ulogovani
+        '403':
+          description: Nemate dozvolu
+        '404':
+          description: Korisnik nije pronađen
+        '500':
+          description: Greška servera
