@@ -35,10 +35,6 @@ app.post('/login', async (req, res) => {
 
     const user = rows[0];
 
-    
-    // if (user.password !== password) {
-    //   return res.status(401).json({ error: 'Pogrešna lozinka' });
-    // }
     const match = await bcrypt.compare(password, user.password);
     if (!match) {
       return res.status(401).json({ error: 'Pogrešna lozinka' });
@@ -49,7 +45,9 @@ app.post('/login', async (req, res) => {
     };
 
 
-    res.json(user);
+    const { password: _, ...userWithoutPassword } = user;
+
+    res.json(userWithoutPassword);
 
   } catch (err) {
     console.error(err);
