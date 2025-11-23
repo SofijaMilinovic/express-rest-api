@@ -19,16 +19,6 @@ app.get('/', (req, res) => {
   res.send('Hello Express!');
 });
 
-app.get('/users', async (req, res) => {
-  try {
-    const [rows] = await pool.query('SELECT * FROM users');
-    res.json(rows);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Greška sa bazom');
-  }
-});
-
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
 
