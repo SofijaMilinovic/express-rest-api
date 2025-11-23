@@ -3,12 +3,13 @@ const session = require('express-session');
 const app = express();
 const pool = require('./db');
 const bcrypt = require('bcrypt');
+require('dotenv').config();
 
 
 app.use(express.json());
 
 app.use(session({
-  secret: 'tajniKljucToBeHidden123',       
+  secret: process.env.SESSION_SECRET,       
   resave: false,
   saveUninitialized: false,
   cookie: { secure: false }     
