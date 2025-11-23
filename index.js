@@ -16,7 +16,7 @@ app.use(session({
 }));
 
 app.get('/', (req, res) => {
-  res.send('Hello Express!');
+  res.send('Application running on port 3000...');
 });
 
 app.post('/login', async (req, res) => {
